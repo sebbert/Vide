@@ -309,13 +309,6 @@ public class Global {
             if (splitDark != null)
                 table.put( "SplitPane.darkShadow" , splitDark );
             
-            // load new value from theme
-            if (Theme.splitPaneHightlight.getColor() != null)
-                table.put( "SplitPane.highlight" , Theme.splitPaneHightlight.getColor() );
-            if (Theme.splitPaneDarkShadow.getColor() != null)
-                table.put( "SplitPane.darkShadow" , Theme.splitPaneDarkShadow.getColor() );
-            
-            
             
             // things not initialized by tiny LAF
             table.put( "Panel.foreground" , table.get( "TextField.foreground") );
