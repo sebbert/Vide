@@ -4,6 +4,9 @@
  */
 package de.malban.gui;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonSyntaxException;
 import de.malban.vide.veccy.VeccyPanel;
 import de.malban.Global;
 import de.malban.config.ConfigChangedListener;
@@ -70,6 +73,7 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.net.InetSocketAddress;
 import java.util.*;
 import javax.help.DefaultHelpBroker;
 import javax.help.HelpBroker;
@@ -80,6 +84,11 @@ import javax.help.WindowPresentation;
 import javax.swing.*;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
+import me.sebbert.videdbg.BuildAndRunMessage;
+import me.sebbert.videdbg.DebugMessageListener;
+import me.sebbert.videdbg.DebugServer;
+import org.java_websocket.WebSocket;
+import org.java_websocket.server.WebSocketServer;
 
 /**
  *
@@ -327,7 +336,41 @@ jCheckBoxMenuItem1.setVisible(false);
                 
             }
         });
+        
+        SwingWorker<Object, Object> debugServerWorker = new SwingWorker<Object,Object>() {
+            @Override
+            protected Object doInBackground() {
+                while( ! ( isCancelled() || isDone() )) {
+                    DebugServer debugServer = new DebugServer(
+                        new InetSocketAddress("localhost", 3000),
+                        (BuildAndRunMessage msg) -> {
+                            SwingUtilities.invokeLater(() -> {
+                                getVedi().startBuildProject();
+                            });
+                        }
+                    );
+                    
+                    try {
+                        debugServer.run();
+                    }
+                    catch (Exception e) {
+                        System.exit(0);
+                        try {
+                            Thread.sleep(2000);
+                        }
+                        catch(Exception ex) {}
+                    }
+                }
+                
+                return null;
+            }
+        };
+        
+        SwingUtilities.invokeLater(() -> {
+            debugServerWorker.execute();
+        });
     }
+
     void windowManagerStart()
     {
         
