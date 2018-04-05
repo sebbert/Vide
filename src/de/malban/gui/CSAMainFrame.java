@@ -84,9 +84,10 @@ import javax.help.WindowPresentation;
 import javax.swing.*;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.plaf.basic.BasicInternalFrameUI;
+import me.sebbert.videdbg.RunMessage;
 import me.sebbert.videdbg.BuildAndRunMessage;
-import me.sebbert.videdbg.DebugMessageListener;
 import me.sebbert.videdbg.DebugServer;
+import me.sebbert.videdbg.DebugMessageListener;
 import org.java_websocket.WebSocket;
 import org.java_websocket.server.WebSocketServer;
 
@@ -343,10 +344,18 @@ jCheckBoxMenuItem1.setVisible(false);
                 while( ! ( isCancelled() || isDone() )) {
                     DebugServer debugServer = new DebugServer(
                         new InetSocketAddress("localhost", 3000),
-                        (BuildAndRunMessage msg) -> {
-                            SwingUtilities.invokeLater(() -> {
-                                getVedi().startBuildProject();
-                            });
+                        new DebugMessageListener() {
+                            public void run(RunMessage msg) {
+                                SwingUtilities.invokeLater(() -> {
+                                    getVecxy().startUp(msg.getPath());
+                                });
+                            }
+
+                            public void buildAndRun(BuildAndRunMessage msg) {
+                                SwingUtilities.invokeLater(() -> {
+                                    getVedi().startBuildProject();
+                                });
+                            }
                         }
                     );
                     

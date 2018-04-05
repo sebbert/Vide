@@ -11,4 +11,5 @@ package me.sebbert.videdbg;
  */
 public class RunMessage {
     String path;
+    public String getPath() { return path; }
 }
